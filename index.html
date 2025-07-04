@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        ساعة رقمية 
+    </title>
+   <style>
+    @keyframes pulse {
+        0% {text-shadow: 0 0 5px #00ffcc;}
+        50% {text-shadow: 0 0 25px #00ffcc;}
+        100% {text-shadow: 0 0 5px #00ffcc;}
+    }
+  body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #00ffcc;
+    font-family: monospace;
+    font-size: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+   #Date {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #00ffcc;
+    margin: 10px;
+    text-align: center;
+   }
+    #clock {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 20px 40px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #00ffcc;
+    margin: 10px;
+    text-align: center;
+    animation: pulse 2s infinite;
+    }
+    #Mode {     position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #00ffcc;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 0 10px #00ffcc;
+    transition: background-color 0.3s;
+}
+#Mode:hover {
+    background-color: #00ccaa;
+}
+.dark-mode {
+    background: linear-gradient(135deg, #000000, #1a1a1a, #333333);
+    color: #00ffcc;
+}
+.dark-mode #clock, .dark-mode #Date {
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 25px #00ffcc;
+}
+#muteBtn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #444;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 8px #00ffcc;
+  font-weight: bold;
+}
+
+    
+  
+</style>
+</head>
+<body>
+ <button id="Mode">تبديل الوضع</button>
+ <button onclick="toggleMute()" id="muteBtn">🔊 الصوت: يعمل</button>
+
+    <div>
+    <div id="clock">00.00.00</div>
+    <div id="Date">00/00/0000</div>
+    </div>
+
+    <script>
+    let mute = false;
+let previousMinute = -1;
+let sound = new Audio("assets/BackSound.mp3");
+
+function toggleMute() {
+  mute = !mute;
+  document.getElementById('muteBtn').textContent = mute ? "🔇 الصوت: موقوف" : "🔊 الصوت: يعمل";
+}
+
+function changeColor() {
+  const colors = ["#00ffcc", "#ff00cc", "#00ccff", "#ccff00", "#ff6600", "#ff3366"];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  document.getElementById('clock').style.color = randomColor;
+  document.getElementById('Date').style.color = randomColor;
+}
+
+function updateClock () {
+    const now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+
+    if (hours < 10) hours = '0' + hours;
+    if (minutes < 10) minutes = '0' + minutes;
+    if (seconds < 10) seconds = '0' + seconds;
+
+    const currentTime = `${hours}:${minutes}:${seconds}`;
+    document.getElementById('clock').textContent = currentTime;
+
+    const day = now.getDate();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const dayName = days[now.getDay()];
+    let formattedDay = day < 10 ? '0' + day : day;
+    let formattedMonth = month < 10 ? '0' + month : month;
+    const currentDate = `${formattedDay}/${formattedMonth}/${year}`;
+    document.getElementById('Date').textContent = `${dayName} - ${currentDate}`;
+
+    
+    if (minutes !== previousMinute) {
+        if (!mute) sound.play();
+        changeColor();
+        previousMinute = minutes;
+    }
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+document.getElementById('Mode').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+});
+
+</script>
+</body>
+</html>
